@@ -1,1 +1,66 @@
-# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@TodoApi_HostAddress = https://localhost:7093
+
+###
+# Cria um novo item no BD.
+# Método HTTP: POST
+# Endpoint: /todoitems
+# O corpo da requisição é enviado em JSON.
+POST {{TodoApi_HostAddress}}/todoitems
+Content-Type: application/json
+
+{
+  "name": "Fazer trabalho de TINCO",
+  "isComplete": false
+}
+
+###
+# Lista todos os itens cadastrados.
+# Método HTTP: GET
+# Endpoint: /todoitems
+GET {{TodoApi_HostAddress}}/todoitems
+
+###
+# Lista apenas os itens concluídos.
+# Método HTTP: GET
+# Endpoint: /todoitems?isComplete=true
+# Aqui é usado um parâmetro de query string para filtrar o resultado.
+GET {{TodoApi_HostAddress}}/todoitems?isComplete=true
+
+###
+# Busca um item específico pelo Id {id}.
+# Método HTTP: GET
+# Endpoint: /todoitems/{id}
+GET {{TodoApi_HostAddress}}/todoitems/3
+
+
+###
+# Atualiza completamente o item de Id {id}.
+# Método HTTP: PUT
+# Endpoint: /todoitems/{id}
+# Em PUT, normalmente enviamos o recurso inteiro com o novo estado.
+PUT {{TodoApi_HostAddress}}/todoitems/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Estudar REST com ASP.NET Core 9",
+  "isComplete": true
+}
+
+###
+# Atualiza parcialmente o item de Id {id}.
+# Método HTTP: PATCH
+# Endpoint: /todoitems/{id}
+# Aqui enviamos apenas o campo que queremos alterar.
+PATCH {{TodoApi_HostAddress}}/todoitems/3
+Content-Type: application/json
+
+{
+  "isComplete": true
+}
+
+###
+# Remove o item de Id {id}.
+# Método HTTP: DELETE
+# Endpoint: /todoitems/{id}
+DELETE {{TodoApi_HostAddress}}/todoitems/1
