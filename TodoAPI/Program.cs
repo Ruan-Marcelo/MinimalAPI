@@ -227,7 +227,3 @@ todoItems.MapDelete("/{id:int}", async (int id, TodoDb db) =>
 
 // Inicia a aplicação e começa a escutar requisições HTTP.
 app.Run();
-
-
-
-
