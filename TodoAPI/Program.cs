@@ -15,6 +15,9 @@ builder.Services.AddDbContext<TodoDb>(options =>
 // Ele ajuda a exibir erros relacionados ao banco de dados de forma mais detalhada, para o desenvolvedor.
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+//criar views
+builder.Services.AddControllersWithViews();
+
 // Constrói a aplicação com base nas configurações definidas acima.
 var app = builder.Build();
 
@@ -25,29 +28,10 @@ var todoItems = app.MapGroup("/todoitems");
 // =========================
 // GET /todoitems
 // GET /todoitems?isComplete=true
+
 // =========================
 // Retorna todos os itens.
 // Se o parâmetro opcional "isComplete" for enviado, filtra pelos itens completos ou incompletos.
-todoItems.MapGet("/", async (bool? isComplete, TodoDb db) =>
-{
-    // Começa a consulta a partir da tabela Todos.
-    var query = db.Todos.AsQueryable();
-
-    // Se o usuário informou o parâmetro isComplete, aplica o filtro correspondente.
-    if (isComplete.HasValue)
-    {
-        query = query.Where(t => t.IsComplete == isComplete.Value);
-    }
-
-    // Ordena por Id, converte cada entidade Todo para TodoItemDto e materializa a lista de forma assíncrona.
-    var items = await query
-        .OrderBy(t => t.Id)
-        .Select(t => new TodoItemDto(t))
-        .ToListAsync();
-
-    // Retorna HTTP 200 OK com a lista de itens.
-    return Results.Ok(items);
-});
 
 // =========================
 // Método GET com query parameter nomeado, sem usar Lambda, se for usar esse, tem que comentar o que está usando Lambda
@@ -226,4 +210,10 @@ todoItems.MapDelete("/{id:int}", async (int id, TodoDb db) =>
 });
 
 // Inicia a aplicação e começa a escutar requisições HTTP.
+app.UseStaticFiles();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();

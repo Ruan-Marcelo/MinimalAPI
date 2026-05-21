@@ -1,4 +1,4 @@
-@TodoApi_HostAddress = https://localhost:7093
+@TodoApi_HostAddress = https://localhost:7170
 
 ###
 # Cria um novo item no BD.
