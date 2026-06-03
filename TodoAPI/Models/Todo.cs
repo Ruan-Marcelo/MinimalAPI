@@ -24,5 +24,12 @@ namespace TodoAPI.Models
         public string Email{ get; set; } = string.Empty;
 
         public bool IsComplete { get; set; }
+
+        [Required(ErrorMessage = "O prazo da tarefa é obrigatório.")]
+        public DateTime Deadline { get; set; }
+
+        public int StudentId { get; set; }
+
+        public Students? Student { get; set; }
     }
 }
