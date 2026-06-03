@@ -107,6 +107,21 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
             ["datetime"] = new[] { "A data e hora são obrigatórias." }
         });
     }
+    if (input.Deadline == DateTime.MinValue)
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["deadline"] = new[] { "O prazo é obrigatório." }
+        });
+    }
+
+    if (input.StudentId <= 0)
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["studentId"] = new[] { "O aluno é obrigatório." }
+        });
+    }
 
     // Cria a entidade Todo a partir do DTO recebido.
     var todo = new Todo
