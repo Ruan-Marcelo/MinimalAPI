@@ -17,6 +17,9 @@ public class TodoItemDto
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
+    public DateTime Deadline { get; set; }
+    public int StudentId { get; set; }
+
     // Construtor vazio.
     // É útil para desserialização automática do JSON recebido pela API.
     public TodoItemDto()
@@ -31,5 +34,7 @@ public class TodoItemDto
         IsComplete = todo.IsComplete;
         Datetime = todo.Datetime;
         Email = todo.Email;
+        Deadline = todo.Deadline;
+        StudentId = todo.StudentId;
     }
 }
