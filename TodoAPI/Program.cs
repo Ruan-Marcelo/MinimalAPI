@@ -139,7 +139,9 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
         Name = input.Name.Trim(),
         IsComplete = input.IsComplete,
         Email = input.Email.Trim(),
-        Datetime = input.Datetime
+        Datetime = input.Datetime,
+        Deadline = input.Deadline,
+        StudentId = input.StudentId
     };
 
     // Adiciona o novo item ao contexto.
@@ -167,6 +169,8 @@ todoItems.MapPut("/{id:int}", async (int id, TodoItemDto input, TodoDb db) =>
         });
     }
 
+
+
     // Busca o item existente pelo Id.
     var todo = await db.Todos.FindAsync(id);
 
@@ -179,6 +183,8 @@ todoItems.MapPut("/{id:int}", async (int id, TodoItemDto input, TodoDb db) =>
     todo.IsComplete = input.IsComplete;
     todo.Datetime = input.Datetime;
     todo.Email = input.Email.Trim();
+    todo.Deadline = input.Deadline;
+    todo.StudentId = input.StudentId;
 
     // Salva no banco.
     await db.SaveChangesAsync();
@@ -245,6 +251,34 @@ todoItems.MapPatch("/{id:int}", async (int id, TodoPatchDto input, TodoDb db) =>
         }
 
         todo.Datetime = input.Datetime.Value;
+    }
+
+    if (input.Deadline.HasValue)
+    {
+        if (input.Deadline.Value == DateTime.MinValue)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["deadline"] = new[] { "O prazo não pode ser vazio." }
+            });
+        }
+
+        todo.Deadline = input.Deadline.Value;
+    }
+
+    if (input.StudentId.HasValue)
+    {
+        var studentExists = await db.Students.AnyAsync(s => s.Id == input.StudentId.Value);
+
+        if (!studentExists)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["studentId"] = new[] { "Aluno não encontrado." }
+            });
+        }
+
+        todo.StudentId = input.StudentId.Value;
     }
 
     // Salva as alterações no banco.
