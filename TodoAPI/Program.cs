@@ -24,6 +24,8 @@ var app = builder.Build();
 // Cria um grupo de rotas com o prefixo "/todoitems".
 // Isso evita repetir esse trecho em todos os endpoints.
 var todoItems = app.MapGroup("/todoitems");
+//dotnet ef migrations add AddStudentsAndTodoDeadline rode 
+//dotnet ef database update depois ess
 var students = app.MapGroup("/students");
 
 // =========================
