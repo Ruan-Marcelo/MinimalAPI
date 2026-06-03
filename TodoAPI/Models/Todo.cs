@@ -21,7 +21,7 @@ namespace TodoAPI.Models
 
         [Required(ErrorMessage = "O e-mail é obrigatório.")]
         [EmailAddress(ErrorMessage = "Informe um endereço de e-mail válido.")]
-        public string Email{ get; set; }
+        public string Email{ get; set; } = string.Empty;
 
         public bool IsComplete { get; set; }
     }

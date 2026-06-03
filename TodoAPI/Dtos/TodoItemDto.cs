@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TodoAPI.Models;
-using TodoAPI.Models;
 namespace TodoAPI.Dtos;
 // DTO (Data Transfer Object) usado para enviar e receber dados da API.
 // Neste caso, ele representa apenas os campos que desejamos expor ao cliente.
@@ -12,11 +11,11 @@ public class TodoItemDto
     public string Name { get; set; } = string.Empty;
     // Indica se a tarefa está concluída.
     public bool IsComplete { get; set; }
-    public DateTime Datetime { get; internal set; }
+    public DateTime Datetime { get; set; }
 
     [Required]
     [EmailAddress]
-    public string Email { get; internal set; }
+    public string Email { get; set; } = string.Empty;
 
     // Construtor vazio.
     // É útil para desserialização automática do JSON recebido pela API.

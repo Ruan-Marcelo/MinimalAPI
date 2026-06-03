@@ -209,6 +209,19 @@ todoItems.MapPatch("/{id:int}", async (int id, TodoPatchDto input, TodoDb db) =>
         todo.Email = input.Email.Trim();
     }
 
+    if (input.Datetime.HasValue)
+    {
+        if (input.Datetime.Value == DateTime.MinValue)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["datetime"] = new[] { "A data e hora não podem ser vazias." }
+            });
+        }
+
+        todo.Datetime = input.Datetime.Value;
+    }
+
     // Salva as alterações no banco.
     await db.SaveChangesAsync();
 
