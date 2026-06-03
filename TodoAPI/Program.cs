@@ -24,6 +24,7 @@ var app = builder.Build();
 // Cria um grupo de rotas com o prefixo "/todoitems".
 // Isso evita repetir esse trecho em todos os endpoints.
 var todoItems = app.MapGroup("/todoitems");
+var students = app.MapGroup("/students");
 
 // =========================
 // GET /todoitems
@@ -309,6 +310,45 @@ todoItems.MapDelete("/{id:int}", async (int id, TodoDb db) =>
 
     // Retorna HTTP 204 No Content.
     return Results.NoContent();
+});
+
+students.MapGet("/", async (TodoDb db) =>
+{
+    var items = await db.Students
+        .OrderBy(s => s.Id)
+        .ToListAsync();
+
+    return Results.Ok(items);
+});
+
+students.MapPost("/", async (Student input, TodoDb db) =>
+{
+    if (string.IsNullOrWhiteSpace(input.Name))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["name"] = new[] { "O nome do aluno é obrigatório." }
+        });
+    }
+
+    if (string.IsNullOrWhiteSpace(input.Email))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["email"] = new[] { "O e-mail do aluno é obrigatório." }
+        });
+    }
+
+    var student = new Student
+    {
+        Name = input.Name.Trim(),
+        Email = input.Email.Trim()
+    };
+
+    db.Students.Add(student);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/students/{student.Id}", student);
 });
 
 // Inicia a aplicação e começa a escutar requisições HTTP.
