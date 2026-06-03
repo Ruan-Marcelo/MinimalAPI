@@ -16,4 +16,8 @@ public class TodoPatchDto
     // - true -&gt; marcar como concluída
     // - false -&gt; marcar como pendente
     public bool? IsComplete { get; set; }
+
+    public  DateTime Datetime { get; set; }
+
+    public string Email { get; set; }
 }

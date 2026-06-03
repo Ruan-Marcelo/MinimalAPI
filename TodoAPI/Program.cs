@@ -90,7 +90,21 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
         // Retorna HTTP 400 Bad Request com detalhes de validação.
         return Results.ValidationProblem(new Dictionary<string, string[]>
         {
-            ["name"] = new[] { "The Name field is required." }
+            ["name"] = new[] { "O nome é obrigatorio." }
+        });
+    }
+    if(string.IsNullOrWhiteSpace(input.Email))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["email"] = new[] { "O email é obrigatorio." }
+        });
+    }
+    if(input.Datetime == DateTime.MinValue)
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["datetime"] = new[] { "A data e hora são obrigatórias." }
         });
     }
 
@@ -98,7 +112,9 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
     var todo = new Todo
     {
         Name = input.Name.Trim(),
-        IsComplete = input.IsComplete
+        IsComplete = input.IsComplete,
+        Email = input.Email.Trim(),
+        Datetime = input.Datetime
     };
 
     // Adiciona o novo item ao contexto.
@@ -122,7 +138,7 @@ todoItems.MapPut("/{id:int}", async (int id, TodoItemDto input, TodoDb db) =>
     {
         return Results.ValidationProblem(new Dictionary<string, string[]>
         {
-            ["name"] = new[] { "The Name field is required." }
+            ["name"] = new[] { "O nome é obrigatorio." }
         });
     }
 
@@ -136,6 +152,8 @@ todoItems.MapPut("/{id:int}", async (int id, TodoItemDto input, TodoDb db) =>
     // Atualiza todos os campos relevantes do recurso.
     todo.Name = input.Name.Trim();
     todo.IsComplete = input.IsComplete;
+    todo.Datetime = input.Datetime;
+    todo.Email = input.Email.Trim();
 
     // Salva no banco.
     await db.SaveChangesAsync();
@@ -165,7 +183,7 @@ todoItems.MapPatch("/{id:int}", async (int id, TodoPatchDto input, TodoDb db) =>
         {
             return Results.ValidationProblem(new Dictionary<string, string[]>
             {
-                ["name"] = new[] { "The Name field cannot be empty." }
+                ["name"] = new[] { "O nome não pode ser vazio." }
             });
         }
 
@@ -177,6 +195,18 @@ todoItems.MapPatch("/{id:int}", async (int id, TodoPatchDto input, TodoDb db) =>
     if (input.IsComplete.HasValue)
     {
         todo.IsComplete = input.IsComplete.Value;
+    }
+
+    if(input.Email is not null)
+    {
+        if (string.IsNullOrWhiteSpace(input.Email))
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["Email"] = new[] {"O Email não pode ser vazio"}
+            });
+        }
+        todo.Email = input.Email.Trim();
     }
 
     // Salva as alterações no banco.

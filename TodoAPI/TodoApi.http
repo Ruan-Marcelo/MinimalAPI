@@ -9,8 +9,10 @@ POST {{TodoApi_HostAddress}}/todoitems
 Content-Type: application/json
 
 {
-  "name": "Fazer trabalho de TINCO",
-  "isComplete": false
+  "name": "Fazer front-end ToDo",
+  "isComplete": true,
+  "email": "zruanzito@gmail.com",
+  "datetime": "2026-06-03"
 }
 
 ###
