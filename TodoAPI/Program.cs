@@ -123,6 +123,16 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
         });
     }
 
+    var studentExists = await db.Students.AnyAsync(s => s.Id == input.StudentId);
+
+    if (!studentExists)
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["studentId"] = new[] { "Aluno não encontrado." }
+        });
+    }
+
     // Cria a entidade Todo a partir do DTO recebido.
     var todo = new Todo
     {
