@@ -20,4 +20,7 @@ public class TodoPatchDto
     public DateTime? Datetime { get; set; }
 
     public string? Email { get; set; }
+
+    public DateTime? Deadline { get; set; }
+    public int? StudentId { get; set; }
 }
