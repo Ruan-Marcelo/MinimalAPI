@@ -9,10 +9,10 @@ POST {{TodoApi_HostAddress}}/todoitems
 Content-Type: application/json
 
 {
-  "name": "Fazer front-end ToDo",
+  "name": "Testar data e email",
   "isComplete": true,
-  "email": "zruanzito@gmail.com",
-  "datetime": "2026-06-03"
+  "email": "ruanzito@gmail.com",
+  "datetime": "2026-05-03"
 }
 
 ###
