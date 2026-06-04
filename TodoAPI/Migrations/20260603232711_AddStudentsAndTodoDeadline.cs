@@ -22,8 +22,7 @@ namespace TodoAPI.Migrations
                 name: "StudentId",
                 table: "Todos",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "Students",

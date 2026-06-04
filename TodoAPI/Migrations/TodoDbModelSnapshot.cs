@@ -68,7 +68,7 @@ namespace TodoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -82,9 +82,7 @@ namespace TodoAPI.Migrations
                 {
                     b.HasOne("TodoAPI.Models.Student", "Student")
                         .WithMany("Todos")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId");
 
                     b.Navigation("Student");
                 });

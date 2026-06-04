@@ -1,5 +1,8 @@
+@model TodoAPI.ViewModels.HomeIndexViewModel
 @{
+    Layout = null;
     ViewData["Title"] = "Lista de Tarefas";
+    var editing = Model.EditingTodo;
 }
 
 <!DOCTYPE html>
@@ -8,212 +11,126 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Lista de Tarefas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body class="bg-light">
     <main class="container py-5">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h1 class="h2 mb-0">Lista de Tarefas</h1>
-            <button id="reloadButton" class="btn btn-outline-secondary" type="button">
-                Atualizar
-            </button>
-        </div>
+        <h1 class="h2 mb-4">Lista de Tarefas</h1>
 
-        <div id="message" class="alert d-none" role="alert"></div>
+        @if (TempData["Message"] is string message)
+        {
+            <div class="alert alert-success">@message</div>
+        }
 
-        <form id="todoForm" class="card card-body mb-4">
-            <h2 class="h5 mb-3">Nova tarefa</h2>
+        @if (TempData["Error"] is string error)
+        {
+            <div class="alert alert-danger">@error</div>
+        }
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Nome</label>
-                    <input id="name" name="name" class="form-control" required />
+        <section class="card card-body mb-4">
+            <h2 class="h5 mb-3">@(editing is null ? "Nova tarefa" : "Editar tarefa")</h2>
+
+            @* O mesmo formulario serve para criar e editar. *@
+            <form asp-controller="Home"
+                  asp-action="@(editing is null ? "Create" : "Edit")"
+                  asp-route-id="@editing?.Id"
+                  method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="Name">Nome</label>
+                        <input class="form-control" id="Name" name="Name" value="@editing?.Name" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Email">E-mail</label>
+                        <input class="form-control" id="Email" name="Email" type="email" value="@editing?.Email" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Datetime">Data</label>
+                        <input class="form-control" id="Datetime" name="Datetime" type="datetime-local"
+                               value="@editing?.Datetime.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Deadline">Prazo</label>
+                        <input class="form-control" id="Deadline" name="Deadline" type="datetime-local"
+                               value="@editing?.Deadline.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div>
+
+                    @if (editing is not null)
+                    {
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" id="IsComplete" name="IsComplete" type="checkbox"
+                                       value="true" checked="@editing.IsComplete" />
+                                <label class="form-check-label" for="IsComplete">Concluida</label>
+                            </div>
+                        </div>
+                    }
                 </div>
 
-                <div class="col-md-6">
-                    <label for="email" class="form-label">E-mail</label>
-                    <input id="email" name="email" type="email" class="form-control" required />
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">
+                        @(editing is null ? "Criar tarefa" : "Salvar alteracoes")
+                    </button>
+
+                    @if (editing is not null)
+                    {
+                        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">Cancelar</a>
+                    }
                 </div>
+            </form>
+        </section>
 
-                <div class="col-md-4">
-                    <label for="datetime" class="form-label">Data</label>
-                    <input id="datetime" name="datetime" type="datetime-local" class="form-control" required />
-                </div>
-
-                <div class="col-md-4">
-                    <label for="deadline" class="form-label">Prazo</label>
-                    <input id="deadline" name="deadline" type="datetime-local" class="form-control" required />
-                </div>
-
-                <div class="col-md-4">
-                    <label for="studentId" class="form-label">Aluno</label>
-                    <select id="studentId" name="studentId" class="form-select">
-                        <option value="">Sem aluno</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <button class="btn btn-primary" type="submit">Adicionar tarefa</button>
-            </div>
-        </form>
-
-        <div class="table-responsive">
+        @* Mostra todas as tarefas cadastradas. *@
+        <section class="table-responsive">
             <table class="table table-bordered table-hover bg-white align-middle">
                 <thead>
                     <tr>
                         <th>Nome</th>
                         <th>E-mail</th>
+                        <th>Data</th>
                         <th>Prazo</th>
-                        <th>Aluno</th>
-                        <th>Concluída</th>
-                        <th>Ações</th>
+                        <th>Status</th>
+                        <th>Acoes</th>
                     </tr>
                 </thead>
-                <tbody id="todoList">
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">Carregando...</td>
-                    </tr>
+                <tbody>
+                    @if (Model.Todos.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhuma tarefa cadastrada.</td>
+                        </tr>
+                    }
+
+                    @foreach (var todo in Model.Todos)
+                    {
+                        <tr>
+                            <td>@todo.Name</td>
+                            <td>@todo.Email</td>
+                            <td>@todo.Datetime.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@todo.Deadline.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(todo.IsComplete ? "Concluida" : "Pendente")</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Home"
+                                       asp-action="Index"
+                                       asp-route-editId="@todo.Id">
+                                        Editar
+                                    </a>
+
+                                    <form asp-controller="Home" asp-action="Delete" asp-route-id="@todo.Id" method="post">
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
-        </div>
+        </section>
     </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.13.2/dist/axios.min.js"></script>
-    <script>
-        const api = axios.create({
-            baseURL: window.location.origin,
-            headers: { "Content-Type": "application/json" }
-        });
-
-        const form = document.getElementById("todoForm");
-        const list = document.getElementById("todoList");
-        const message = document.getElementById("message");
-        const studentSelect = document.getElementById("studentId");
-        let students = [];
-
-        function showMessage(text, type = "success") {
-            message.textContent = text;
-            message.className = `alert alert-${type}`;
-        }
-
-        function formatDate(value) {
-            return value ? new Date(value).toLocaleString("pt-BR") : "-";
-        }
-
-        function getErrorMessage(error) {
-            const errors = error.response?.data?.errors;
-            if (errors) {
-                return Object.values(errors).flat().join(" ");
-            }
-
-            return error.response?.data?.title || error.message || "Não foi possível concluir a operação.";
-        }
-
-        async function loadStudents() {
-            const response = await api.get("/students");
-            students = response.data;
-
-            studentSelect.innerHTML = '<option value="">Sem aluno</option>';
-            students.forEach(student => {
-                const option = document.createElement("option");
-                option.value = student.id;
-                option.textContent = student.name;
-                studentSelect.appendChild(option);
-            });
-        }
-
-        async function loadTodos() {
-            try {
-                const response = await api.get("/todoitems");
-
-                if (response.data.length === 0) {
-                    list.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhuma tarefa cadastrada.</td></tr>';
-                    return;
-                }
-
-                list.innerHTML = response.data.map(todo => {
-                    const student = students.find(item => item.id === todo.studentId);
-
-                    return `
-                        <tr>
-                            <td>${todo.name}</td>
-                            <td>${todo.email}</td>
-                            <td>${formatDate(todo.deadline)}</td>
-                            <td>${student?.name ?? "-"}</td>
-                            <td>
-                                <input class="form-check-input" type="checkbox"
-                                       ${todo.isComplete ? "checked" : ""}
-                                       onchange="toggleTodo(${todo.id}, this.checked)" />
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-danger" type="button"
-                                        onclick="deleteTodo(${todo.id})">
-                                    Excluir
-                                </button>
-                            </td>
-                        </tr>`;
-                }).join("");
-            } catch (error) {
-                showMessage(getErrorMessage(error), "danger");
-            }
-        }
-
-        async function toggleTodo(id, isComplete) {
-            try {
-                await api.patch(`/todoitems/${id}`, { isComplete });
-                showMessage("Tarefa atualizada.");
-            } catch (error) {
-                showMessage(getErrorMessage(error), "danger");
-                await loadTodos();
-            }
-        }
-
-        async function deleteTodo(id) {
-            try {
-                await api.delete(`/todoitems/${id}`);
-                showMessage("Tarefa excluída.");
-                await loadTodos();
-            } catch (error) {
-                showMessage(getErrorMessage(error), "danger");
-            }
-        }
-
-        form.addEventListener("submit", async event => {
-            event.preventDefault();
-
-            const studentId = studentSelect.value;
-            const payload = {
-                name: form.name.value,
-                email: form.email.value,
-                datetime: form.datetime.value,
-                deadline: form.deadline.value,
-                studentId: studentId ? Number(studentId) : null,
-                isComplete: false
-            };
-
-            try {
-                await api.post("/todoitems", payload);
-                form.reset();
-                showMessage("Tarefa cadastrada.");
-                await loadTodos();
-            } catch (error) {
-                showMessage(getErrorMessage(error), "danger");
-            }
-        });
-
-        document.getElementById("reloadButton").addEventListener("click", loadTodos);
-
-        async function initialize() {
-            try {
-                await loadStudents();
-                await loadTodos();
-            } catch (error) {
-                showMessage(getErrorMessage(error), "danger");
-            }
-        }
-
-        initialize();
-    </script>
 </body>
 </html>
