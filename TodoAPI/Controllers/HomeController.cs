@@ -15,8 +15,8 @@ public class HomeController : Controller
         _db = db;
     }
 
-    // Mostra a lista de tarefas e carrega uma tarefa para editar.
-    public async Task<IActionResult> Index(int? editId)
+    // Mostra a lista de tarefas.
+    public async Task<IActionResult> Index()
     {
         var model = new HomeIndexViewModel
         {
@@ -25,16 +25,6 @@ public class HomeController : Controller
                 .ThenBy(todo => todo.Deadline)
                 .ToListAsync()
         };
-
-        if (editId.HasValue)
-        {
-            model.EditingTodo = await _db.Todos.FindAsync(editId.Value);
-
-            if (model.EditingTodo is null)
-            {
-                return NotFound();
-            }
-        }
 
         return View(model);
     }
@@ -61,56 +51,6 @@ public class HomeController : Controller
         await _db.SaveChangesAsync();
 
         TempData["Message"] = "Tarefa criada.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Edita uma tarefa que ja existe.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Todo input)
-    {
-        var todo = await _db.Todos.FindAsync(id);
-        if (todo is null)
-        {
-            return NotFound();
-        }
-
-        ModelState.Remove(nameof(Todo.Student));
-        ModelState.Remove(nameof(Todo.StudentId));
-
-        if (!ModelState.IsValid)
-        {
-            TempData["Error"] = "Preencha corretamente os campos da tarefa.";
-            return RedirectToAction(nameof(Index), new { editId = id });
-        }
-
-        todo.Name = input.Name.Trim();
-        todo.Email = input.Email.Trim();
-        todo.Datetime = input.Datetime;
-        todo.Deadline = input.Deadline;
-        todo.IsComplete = input.IsComplete;
-
-        await _db.SaveChangesAsync();
-
-        TempData["Message"] = "Tarefa atualizada.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Exclui uma tarefa.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var todo = await _db.Todos.FindAsync(id);
-        if (todo is null)
-        {
-            return NotFound();
-        }
-
-        _db.Todos.Remove(todo);
-        await _db.SaveChangesAsync();
-
-        TempData["Message"] = "Tarefa excluida.";
         return RedirectToAction(nameof(Index));
     }
 }
