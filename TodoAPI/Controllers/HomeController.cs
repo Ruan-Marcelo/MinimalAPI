@@ -31,7 +31,6 @@ public class HomeController : Controller
 
     // Cria uma nova tarefa.
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Todo todo)
     {
         ModelState.Remove(nameof(Todo.Student));
