@@ -1,6 +1,52 @@
 @TodoApi_HostAddress = https://localhost:7170
 
 ###
+  # Cadastra um aluno
+POST {{TodoApi_HostAddress}}/students
+Content-Type: application/json
+
+{
+    "name": "Ruan",
+    "email": "ruanzito@gmail.com"
+}
+
+###
+# Lista os alunos para descobrir seus IDs
+GET {{TodoApi_HostAddress}}/students
+
+  ###
+POST {{TodoApi_HostAddress}}/todoitems
+Content-Type: application/json
+{
+    "name": "Testar data, email e estudante",
+    "isComplete": false,
+    "email": "ruanzito@gmail.com",
+    "datetime": "2026-06-03T10:00:00",
+    "deadline": "2026-06-10T23:59:00",
+    "studentId": 1
+}
+###
+PUT {{TodoApi_HostAddress}}/todoitems/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Estudar REST",
+    "isComplete": true,
+    "email": "ruanzito@gmail.com",
+    "datetime": "2026-06-03T10:00:00",
+    "deadline": "2026-06-15T23:59:00",
+    "studentId": 1
+} 
+###
+PATCH {{TodoApi_HostAddress}}/todoitems/1
+Content-Type: application/json
+
+{
+    "deadline": "2026-06-20T23:59:00",
+    "studentId": 1
+}
+###
 # Cria um novo item no BD.
 # Método HTTP: POST
 # Endpoint: /todoitems
