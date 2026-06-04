@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace TodoAPI.Models
 {
-    public class Students
+    public class Student
     {
         public int Id { get; set; }
 

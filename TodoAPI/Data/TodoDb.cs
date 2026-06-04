@@ -16,7 +16,7 @@ public class TodoDb : DbContext
     // Representa a tabela "Todos" no banco de dados.
     // O tipo DbSet<Todo> permite executar operações de consulta e persistência sobre a entidade Todo.
     public DbSet<Todo> Todos => Set<Todo>();
-    public DbSet<Students> Students => Set<Students>();
+    public DbSet<Student> Students => Set<Student>();
 
 
 }

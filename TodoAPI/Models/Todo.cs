@@ -28,8 +28,8 @@ namespace TodoAPI.Models
         [Required(ErrorMessage = "O prazo da tarefa é obrigatório.")]
         public DateTime Deadline { get; set; }
 
-        public int StudentId { get; set; }
+        public int? StudentId { get; set; }
 
-        public Students? Student { get; set; }
+        public Student? Student { get; set; }
     }
 }

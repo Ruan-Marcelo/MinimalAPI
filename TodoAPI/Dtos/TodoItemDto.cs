@@ -18,7 +18,7 @@ public class TodoItemDto
     public string Email { get; set; } = string.Empty;
 
     public DateTime Deadline { get; set; }
-    public int StudentId { get; set; }
+    public int? StudentId { get; set; }
 
     // Construtor vazio.
     // É útil para desserialização automática do JSON recebido pela API.

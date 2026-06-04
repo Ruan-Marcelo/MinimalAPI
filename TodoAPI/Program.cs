@@ -117,14 +117,19 @@ todoItems.MapPost("/", async (TodoItemDto input, TodoDb db) =>
             ["deadline"] = new[] { "O prazo é obrigatório." }
         });
     }
+    //if (input.StudentId.HasValue)
+    //{
+    //    var studentExists = await db.Students.AnyAsync(s => s.Id == input.StudentId.Value);
 
-    if (input.StudentId <= 0)
-    {
-        return Results.ValidationProblem(new Dictionary<string, string[]>
-        {
-            ["studentId"] = new[] { "O aluno é obrigatório." }
-        });
-    }
+    //    if (!studentExists)
+    //    {
+    //        return Results.ValidationProblem(new Dictionary<string, string[]>
+    //        {
+    //            ["studentId"] = new[] { "Aluno não encontrado." }
+    //        });
+    //    }
+    //}
+
 
     var studentExists = await db.Students.AnyAsync(s => s.Id == input.StudentId);
 
